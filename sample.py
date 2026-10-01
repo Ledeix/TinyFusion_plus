@@ -71,10 +71,23 @@ def main(args):
         samples, _ = samples.chunk(2, dim=0)  # Remove null class samples
         samples = vae.decode(samples / 0.18215).sample
 
+    # # Save and display images:
+    # save_path = os.path.join("outputs/samples", f"{args.ckpt.replace('.pt', '.png').replace('/', '-')}")
+    # os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    # save_image(samples, save_path, nrow=4, normalize=True, value_range=(-1, 1))
+    
     # Save and display images:
-    save_path = os.path.join("outputs/samples", f"{args.ckpt.replace('.pt', '.png').replace('/', '-')}")
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    save_image(samples, save_path, nrow=4, normalize=True, value_range=(-1, 1))
+    save_dir = os.path.join("outputs/samples", f"{args.ckpt.replace('.pt', '').replace('/', '-')}")
+    os.makedirs(save_dir, exist_ok=True)
+    
+    # Save images individually
+    for i, sample in enumerate(samples):
+        individual_save_path = os.path.join(save_dir, f"sample_{i:02d}.png")
+        save_image(sample.unsqueeze(0), individual_save_path, nrow=1, normalize=True, value_range=(-1, 1))
+    
+    # Also save a combined grid for overview
+    combined_save_path = os.path.join(save_dir, "combined_grid.png")
+    save_image(samples, combined_save_path, nrow=4, normalize=True, value_range=(-1, 1))
 
 
 if __name__ == "__main__":
